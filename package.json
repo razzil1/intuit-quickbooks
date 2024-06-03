@@ -1,0 +1,18 @@
+{
+  "name": "intuit-quickbooks",
+  "version": "1.0.0",
+  "description": "Script for pulling data from Insuit QuickBooks Online and storing it to MSSQL server",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --env-file=.env test.js",
+    "start": "node --env-file=.env index.js"
+  },
+  "author": "Dusan Pilipovic",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "mssql": "^10.0.2",
+    "node-quickbooks": "^2.0.45"
+  }
+}
