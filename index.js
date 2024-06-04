@@ -32,16 +32,138 @@ const main = async () => {
   //   );
   // });
 
+  // qbo.batch(
+  //   [
+  //     {
+  //       Query: "select * from Account",
+  //     },
+  //     {
+  //       Query: "select * from Attachable",
+  //     },
+  //     {
+  //       Query: "select * from Bill",
+  //     },
+  //     {
+  //       Query: "select * from billpayment",
+  //     },
+  //     {
+  //       Query: "Select * from Budget",
+  //     },
+  //     {
+  //       Query: "select  * from Class",
+  //     },
+  //     {
+  //       Query: "select * from companycurrency",
+  //     },
+  //     {
+  //       Query: "select * from CompanyInfo",
+  //     },
+  //     {
+  //       Query: "select * from CreditMemo TxnDate",
+  //     },
+  //     {
+  //       Query: "select * from creditcardpayment",
+  //     },
+  //     {
+  //       Query: "select * from Customer",
+  //     },
+  //     {
+  //       Query: "select * From CustomerType",
+  //     },
+  //     {
+  //       Query: "select * from Department",
+  //     },
+  //     {
+  //       Query: "select * from Deposit",
+  //     },
+  //     {
+  //       Query: "select * from Employee",
+  //     },
+  //     {
+  //       Query: "select * from estimate",
+  //     },
+  //     {
+  //       Query: "select * from exchangerate",
+  //     },
+  //     {
+  //       Query: "select * from Invoice",
+  //     },
+  //     {
+  //       Query: "select * from Item maxresults 2",
+  //     },
+  //     {
+  //       Query: "select * from journalcode",
+  //     },
+  //     {
+  //       Query: "select * from JournalEntry",
+  //     },
+  //     {
+  //       Query: "select * from Payment",
+  //     },
+  //     {
+  //       Query: "select * from PaymentMethod",
+  //     },
+  //     {
+  //       Query: "select * from Preferences",
+  //     },
+  //     {
+  //       Query: "select * from Purchase",
+  //     },
+  //     {
+  //       Query: "select * from PurchaseOrder",
+  //     },
+  //     {
+  //       Query: "Select * From RecurringTransaction",
+  //     },
+  //     {
+  //       Query: "select * from RefundReceipt",
+  //     },
+  //     {
+  //       Query: "Select * from ReimburseCharge",
+  //     },
+  //     {
+  //       Query: "select * from SalesReceipt",
+  //     },
+  //   ],
+  //   (err, response) => {
+  //     console.log("err", err);
+  //     console.log("response", response.BatchItemResponse);
+  //   }
+  // );
+
   qbo.batch(
     [
       {
-        Query: "select * from SalesReceipt",
+        Query: "select * From TaxCode",
       },
       {
-        Query: "select * from Account",
+        Query: "Select * From TaxRate",
+      },
+      {
+        Query: "select * from TaxAgency",
+      },
+      {
+        Query: "select * from Term",
+      },
+      {
+        Query: "select * from TimeActivity",
+      },
+      {
+        Query: "select * from Transfer",
+      },
+      {
+        Query: "select * from vendor",
+      },
+      {
+        Query: "select * from vendorcredit",
+      },
+      {
+        Query: "",
       },
     ],
     (err, response) => {
+      console.log("err", err);
+      console.log("json", JSON.stringify(response.BatchItemResponse));
       console.log("response", response.BatchItemResponse);
     }
   );
