@@ -50,7 +50,7 @@ const main = async () => {
   //       Query: "Select * from Budget",
   //     },
   //     {
-  //       Query: "select  * from Class",
+  //       Query: "select * from Class",
   //     },
   //     {
   //       Query: "select * from companycurrency",
