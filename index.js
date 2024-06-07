@@ -172,7 +172,7 @@ const main = async () => {
   //       Query: "select * from TaxAgency",
   //     },
   //     {
-  //       Query: "select * from Term",
+  //         Query: "select * from Term",
   //     },
   //     {
   //       Query: "select * from TimeActivity",
@@ -212,6 +212,92 @@ const main = async () => {
               console.error("Error writing the Invoice file:", err);
             } else {
               console.log("Invoice file has been saved!");
+            }
+          }
+        );
+      });
+    });
+  });
+
+  qbo.findEstimates({ fetchAll: true }, (err, response) => {
+    console.log("test", response.QueryResponse);
+    if (!response.QueryResponse) {
+      return;
+    }
+    response.QueryResponse.Estimate.forEach((estimate) => {
+      if (err) {
+        console.error(err);
+      }
+      qbo.getEstimatePdf(estimate.Id, (err, response) => {
+        if (err) {
+          console.error("err estimate pdf", err);
+        }
+
+        fs.writeFile(
+          `./estimates/Estimate-${estimate.Id}.pdf`,
+          response,
+          (err) => {
+            if (err) {
+              console.error("Error writing the estimates file:", err);
+            } else {
+              console.log("Estimates file has been saved!");
+            }
+          }
+        );
+      });
+    });
+  });
+  qbo.findCreditMemos({ fetchAll: true }, (err, response) => {
+    console.log("test", response.QueryResponse);
+    if (!response.QueryResponse) {
+      return;
+    }
+    response.QueryResponse.CreditMemo.forEach((creditMemo) => {
+      if (err) {
+        console.error(err);
+      }
+      qbo.getCreditMemoPdf(creditMemo.Id, (err, response) => {
+        if (err) {
+          console.error("err creditMemo pdf", err);
+        }
+
+        fs.writeFile(
+          `./creditMemos/CreditMemo-${creditMemo.Id}.pdf`,
+          response,
+          (err) => {
+            if (err) {
+              console.error("Error writing the creditMemos file:", err);
+            } else {
+              console.log("CreditMemos file has been saved!");
+            }
+          }
+        );
+      });
+    });
+  });
+
+  qbo.findSalesReceipts({ fetchAll: true }, (err, response) => {
+    console.log("test", response.QueryResponse);
+    if (!response.QueryResponse) {
+      return;
+    }
+    response.QueryResponse.SalesReceipt.forEach((salesReceipt) => {
+      if (err) {
+        console.error(err);
+      }
+      qbo.getSalesReceiptPdf(salesReceipt.Id, (err, response) => {
+        if (err) {
+          console.error("err salesReceipt pdf", err);
+        }
+
+        fs.writeFile(
+          `./salesReceipts/SalesReceipt-${salesReceipt.Id}.pdf`,
+          response,
+          (err) => {
+            if (err) {
+              console.error("Error writing the salesReceipt file:", err);
+            } else {
+              console.log("SalesReceipts file has been saved!");
             }
           }
         );
