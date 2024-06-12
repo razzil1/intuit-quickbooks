@@ -1,4 +1,35 @@
 import { Sequelize, DataTypes } from "sequelize";
+import {
+  Id,
+  VendorRef,
+  TotalAmt,
+  SyncToken,
+  CurrencyRef,
+  DocNumber,
+  PrivateNote,
+  TxnDate,
+  ExchangeRate,
+  APAccountRef,
+  DepartmentRef,
+  MetaData,
+  RecurDataRef,
+  Balance,
+  Name,
+  Active,
+  ParentRef,
+  FullyQualifiedName,
+  CustomerRef,
+  ClassRef,
+  SalesTermRef,
+  HomeBalance,
+  Amount,
+  PrintStatus,
+  WebAddrURI,
+  CompanyName,
+  ShipAddr,
+  PaymentMethodRef,
+  BillAddr,
+} from "./common-attributes.js";
 
 // Create a Sequelize instance, replace with your database credentials
 const sequelize = new Sequelize("master", "sa", "<YourStrong@Passw0rd>", {
@@ -13,89 +44,774 @@ const sequelize = new Sequelize("master", "sa", "<YourStrong@Passw0rd>", {
   logging: false, // Disable logging; default: console.log
 });
 
-const VendorCredit = sequelize.define("VendorCredit", {
-  Id: {
+export const Account = sequelize.define("Account", {
+  ...Id,
+  ...Name,
+  ...SyncToken,
+  AcctNum: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...CurrencyRef,
+  ...ParentRef,
+  Description: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...Active,
+  ...MetaData,
+  SubAccount: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  Classification: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...FullyQualifiedName,
+  AccountType: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CurrentBalanceWithSubAccounts: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  AccountSubType: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CurrentBalance: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+});
+
+export const Attachable = sequelize.define("Attachable", {
+  ...Id,
+  ...SyncToken,
+  FileName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Note: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Category: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ContentType: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PlaceName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  AttachableRefIncludeOnSend: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  AttachableRefLineInfo: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  AttachableRefNoRefOnly: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  AttachableRefInactive: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  AttachableRefEntityRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  AttachableRefEntityRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Long: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Tag: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Lat: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...MetaData,
+
+  FileAccessUri: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Size: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  ThumbnailFileAccessUri: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TempDownloadUri: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ThumbnailTempDownloadUri: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+});
+
+export const Bill = sequelize.define("Bill", {
+  ...Id,
+  ...VendorRef,
+  ...SyncToken,
+  ...CurrencyRef,
+  ...TxnDate,
+  ...APAccountRef,
+  ...SalesTermRef,
+  ...TotalAmt,
+  DueDate: {
+    allowNull: true,
+    type: DataTypes.DATE,
+  },
+  ...MetaData,
+  ...DocNumber,
+  ...PrivateNote,
+  ...ExchangeRate,
+  ...DepartmentRef,
+  ...HomeBalance,
+  ...RecurDataRef,
+  ...Balance,
+});
+
+export const LinkedTxn = sequelize.define("LinkedTxn", {
+  TnxId: {
     primaryKey: true,
     allowNull: false,
     type: DataTypes.STRING,
   },
-  VendorRefName: {
-    allowNull: true,
-    type: DataTypes.STRING,
-  },
-  VendorRefValue: {
+  TxnType: {
     allowNull: false,
     type: DataTypes.STRING,
   },
-  SyncToken: {
+  TxnLineId: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  CurrencyRefName: {
+  BillId: {
+    allowNull: false,
+    type: DataTypes.STRING,
+    references: {
+      model: "Bills",
+      key: "Id",
+    },
+  },
+});
+
+Bill.hasMany(LinkedTxn, { as: "linkedTxns" });
+LinkedTxn.belongsTo(Bill);
+
+export const BillPayment = sequelize.define("BillPayment", {
+  ...Id,
+  ...VendorRef,
+  ...TotalAmt,
+  PayType: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
+  ...SyncToken,
+  ...CurrencyRef,
+  ...DocNumber,
+  ...PrivateNote,
+  ...TxnDate,
+  ...ExchangeRate,
+  ...APAccountRef,
+  ...DepartmentRef,
+  ProcessBillPayment: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  ...MetaData,
+  CheckPaymentBankAccountRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  CurrencyRefValue: {
+  CheckPaymentBankAccountRefName: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  DocNumber: {
+  CheckPaymentPrintStatus: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  PrivateNote: {
+
+  CreditCardPaymentCCAccountRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
+  CreditCardPaymentCCAccountRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+});
+
+export const Budget = sequelize.define("Budget", {
+  ...Id,
+  EndDate: {
+    allowNull: false,
+    type: DataTypes.DATE,
+  },
+  StartDate: {
+    allowNull: false,
+    type: DataTypes.DATE,
+  },
+  ...SyncToken,
+  BudgetEntryType: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...Name,
+  BudgetType: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...Active,
+  ...MetaData,
+});
+
+export const BudgetDetail = sequelize.define("BudgetDetail", {
+  Id: {
+    primaryKey: true,
+    allowNull: false,
+    autoIncrement: true,
+    type: DataTypes.INTEGER,
+  },
+  ...ClassRef,
+  ...DepartmentRef,
+  ...Amount,
+  BudgetDate: {
+    allowNull: true,
+    type: DataTypes.DATE,
+  },
+  AccountRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  AccountRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...CustomerRef,
+  BudgetId: {
+    allowNull: false,
+    type: DataTypes.STRING,
+    references: {
+      model: "Budgets",
+      key: "Id",
+    },
+  },
+});
+
+Budget.hasMany(BudgetDetail, { as: "budgetDetails" });
+BudgetDetail.belongsTo(Budget);
+
+export const Class = sequelize.define("Class", {
+  ...Id,
+  ...Name,
+  ...SyncToken,
+  ...ParentRef,
+  SubClass: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  ...Active,
+  ...MetaData,
+  ...FullyQualifiedName,
+});
+
+export const CompanyCurrency = sequelize.define("CompanyCurrency", {
+  ...Id,
+  Code: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
+  ...SyncToken,
+  ...Name,
+  ...Active,
+  ...MetaData,
+});
+
+export const CompanyInfo = sequelize.define("CompanyInfo", {
+  ...Id,
+  ...SyncToken,
+  ...CompanyName,
+  CompanyAddrId: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrPostalCode: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrCity: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrCountry: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLine1: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLine2: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLine3: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLine4: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLine5: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLat: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrLong: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CompanyAddrCountrySubDivisionCode: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrId: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrPostalCode: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrCity: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrCountry: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLine1: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLine2: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLine3: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLine4: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLine5: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLat: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrLong: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalAddrCountrySubDivisionCode: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  SupportedLanguages: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Country: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  EmailAddress: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...WebAddrURI,
+  FiscalYearStartMonth: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrId: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrPostalCode: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrCity: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrCountry: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLine1: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLine2: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLine3: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLine4: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLine5: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLat: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrLong: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerCommunicationAddrCountrySubDivisionCode: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PrimaryPhoneFreeFormNumber: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LegalName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...MetaData,
+  CompanyStartDate: {
+    allowNull: true,
+    type: DataTypes.DATE,
+  },
+});
+
+export const CreditMemo = sequelize.define("CreditMemo", {
+  ...Id,
+  // Line,
+  ...CustomerRef,
+  ...SyncToken,
+  ...CurrencyRef,
+  BillEmailAddress: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...TxnDate,
+  ...ClassRef,
+  ...PrintStatus,
+  ...SalesTermRef,
+  ...TotalAmt,
+  ApplyTaxAfterDiscount: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  ...DocNumber,
+  ...PrivateNote,
+  CustomerMemoValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ProjectRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ProjectRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TxnTaxDetailTxnTaxCodeRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TxnTaxDetailTxnTaxCodeRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TxnTaxDetailTotalTax: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  // TxnTaxDetailTaxLine,
+  ...PaymentMethodRef,
+  ExchangeRate: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  ...ShipAddr,
+  ...DepartmentRef,
+  EmailStatus: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+
+  ...BillAddr,
+  ...MetaData,
+  ...HomeBalance,
+  RemainingCredit: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  ...RecurDataRef,
+  TaxExemptionRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TaxExemptionRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...Balance,
+  HomeTotalAmt: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+});
+
+export const VendorCredit = sequelize.define("VendorCredit", {
+  ...Id,
+  ...VendorRef,
+  ...SyncToken,
+  ...CurrencyRef,
+  ...DocNumber,
+  ...PrivateNote,
   GlobalTaxCalculation: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  APAccountRefName: {
+  ...APAccountRef,
+  ...DepartmentRef,
+  ...TxnDate,
+  ...Balance,
+  ...RecurDataRef,
+  ...TotalAmt,
+});
+
+export const CreditCardPayment = sequelize.define("CreditCardPayment", {
+  ...Id,
+  CreditCardAccountRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  APAccountRefValue: {
+  CreditCardAccountRefName: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  DepartmentRefName: {
+  ...Amount,
+  BankAccountRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  DepartmentRefValue: {
+  BankAccountRefName: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  TxnDate: {
+  ...SyncToken,
+  ...PrivateNote,
+  ...VendorRef,
+  ...TxnDate,
+  Memo: {
     allowNull: true,
-    type: DataTypes.DATE,
+    type: DataTypes.STRING,
   },
-  Balance: {
+  ...PrintStatus,
+  CheckNum: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...MetaData,
+});
+
+export const Customer = sequelize.define("Customer", {
+  ...Id,
+  ...SyncToken,
+  DisplayName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Title: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  GivenName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  MiddleName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Suffix: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  FamilyName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PrimaryEmailAddrAddress: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ResaleNum: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  DefaultTaxCodeRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  DefaultTaxCodeRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PreferredDeliveryMethod: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...SalesTermRef,
+  CustomerTypeRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  FaxFreeFormNumber: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  BillWithParent: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  ...CurrencyRef,
+  MobileFreeFormNumber: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  Job: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  BalanceWithJobs: {
     allowNull: true,
     type: DataTypes.DECIMAL,
   },
-  MetaDataCreateTime: {
-    allowNull: false,
-    type: DataTypes.DATE,
-  },
-  MetaDataLastUpdatedTime: {
-    allowNull: true,
-    type: DataTypes.DATE,
-  },
-  RecurDataRefName: {
+  PrimaryPhoneFreeFormNumber: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  RecurDataRefValue: {
+  OpenBalanceDate: {
+    allowNull: true,
+    type: DataTypes.DATE,
+  },
+  Taxable: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  AlternatePhoneFreeFormNumber: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  TotalAmt: {
+  ...MetaData,
+  ...ParentRef,
+  Notes: {
     allowNull: true,
-    type: DataTypes.BIGINT,
+    type: DataTypes.STRING,
+  },
+  ...WebAddrURI,
+  ...Active,
+  ...CompanyName,
+  ...Balance,
+  ...ShipAddr,
+  ...PaymentMethodRef,
+  IsProject: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  Source: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PrintOnCheckName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ...BillAddr,
+  ...FullyQualifiedName,
+  Level: {
+    allowNull: true,
+    type: DataTypes.INTEGER,
+  },
+  TaxExemptionReasonId: {
+    allowNull: true,
+    type: DataTypes.INTEGER,
   },
 });
+
+export const CustomerType = sequelize.define("CustomerType", {
+  ...Id,
+  ...SyncToken,
+  ...Name,
+  ...Active,
+  ...MetaData,
+});
+
+export const Department = sequelize.define("Department", {
+  ...Id,
+  ...Name,
+  ...SyncToken,
+  ...ParentRef,
+  ...Active,
+  ...MetaData,
+  ...FullyQualifiedName,
+  SubDepartment: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+});
+
 const Vendor = sequelize.define("Vendor", {
   Id: {
     primaryKey: true,
@@ -453,15 +1169,15 @@ const Term = sequelize.define("Term", {
   },
   DiscountDayOfMonth: {
     allowNull: true,
-    type: DataTypes.Positive Integer,
+    type: DataTypes.INTEGER,
   },
   DueNextMonthDays: {
     allowNull: true,
-    type: DataTypes.Positive Integer,
+    type: DataTypes.INTEGER,
   },
   DueDays: {
     allowNull: true,
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
   },
 });
 const TaxAgency = sequelize.define("TaxAgency", {
@@ -637,7 +1353,7 @@ const ReimburseCharge = sequelize.define("ReimburseCharge", {
     type: DataTypes.DECIMAL,
   },
 });
-const RefundReceipt= sequelize.define("RefundReceipt", {
+const RefundReceipt = sequelize.define("RefundReceipt", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -827,9 +1543,8 @@ const RefundReceipt= sequelize.define("RefundReceipt", {
     allowNull: true,
     type: DataTypes.DECIMAL,
   },
-
 });
-const RecurringTransaction= sequelize.define("RecurringTransaction", {
+const RecurringTransaction = sequelize.define("RecurringTransaction", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -920,7 +1635,7 @@ const RecurringTransaction= sequelize.define("RecurringTransaction", {
     type: DataTypes.STRING,
   },
 });
-const purchaseorder= sequelize.define("purchaseorder", {
+const purchaseorder = sequelize.define("purchaseorder", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1067,7 +1782,7 @@ const purchaseorder= sequelize.define("purchaseorder", {
     type: DataTypes.BIGINT,
   },
 });
-const purchase= sequelize.define("purchase", {
+const purchase = sequelize.define("purchase", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1101,10 +1816,10 @@ const purchase= sequelize.define("purchase", {
     allowNull: true,
     type: DataTypes.DATE,
   },
-    PrintStatus: {
-      allowNull: true,
-      type: DataTypes.STRING,
-    },
+  PrintStatus: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
   // RemitToAddr: {
   //   allowNull: true,
   //   type: DataTypes.STRING,
@@ -1185,9 +1900,8 @@ const purchase= sequelize.define("purchase", {
     allowNull: true,
     type: DataTypes.STRING,
   },
-
 });
-const Preferences= sequelize.define("Preferences", {
+const Preferences = sequelize.define("Preferences", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1509,42 +2223,39 @@ const Preferences= sequelize.define("Preferences", {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsDefaultTaxRateSelection  : {
+  OtherPrefsDefaultTaxRateSelection: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsDTXCopyMemo  : {
+  OtherPrefsDTXCopyMemo: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsMTDEnabled  : {
+  OtherPrefsMTDEnabled: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsMTDEnabled  : {
+  OtherPrefsMTDEnabled: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsMarkupOnBillableExpenseEnabled : {
+  OtherPrefsMarkupOnBillableExpenseEnabled: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsNumberFormat : {
+  OtherPrefsNumberFormat: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsNumberFormatMnemonic
-  : {
+  OtherPrefsNumberFormatMnemonic: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsProjectsEnabled
-  : {
+  OtherPrefsProjectsEnabled: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  OtherPrefsPurchseOrderEnabled
-  : {
+  OtherPrefsPurchseOrderEnabled: {
     allowNull: true,
     type: DataTypes.STRING,
   },
@@ -1567,19 +2278,19 @@ const Preferences= sequelize.define("Preferences", {
   OtherPrefsUncategorizedExpenseAccountId: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   OtherPrefsVendor1099Enabled: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   OtherPrefsUseCustomTxnNumbers: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   OtherPrefsAllowGratuity: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   OtherPrefsGratuityAccount: {
     allowNull: true,
     type: DataTypes.STRING,
@@ -1587,15 +2298,15 @@ const Preferences= sequelize.define("Preferences", {
   TimeTrackingPrefsWorkWeekStartDate: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   TimeTrackingPrefsMarkTimeEntriesBillable: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
-  },  
+  },
   TimeTrackingPrefsShowBillRateToAll: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
-  },    
+  },
   TimeTrackingPrefsShowUsingSalesTax: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
@@ -1613,7 +2324,7 @@ const Preferences= sequelize.define("Preferences", {
     type: DataTypes.BOOLEAN,
   },
 });
-const paymentmethod= sequelize.define("paymentmethod", {
+const paymentmethod = sequelize.define("paymentmethod", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1622,29 +2333,29 @@ const paymentmethod= sequelize.define("paymentmethod", {
   Name: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   SyncToken: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   Active: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   Type: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   MetaDataCreateTimedateTime: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   MetaDataLastUpdatedTimeDateTime: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
 });
-const payment= sequelize.define("payment", {
+const payment = sequelize.define("payment", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1653,27 +2364,27 @@ const payment= sequelize.define("payment", {
   TotalAmt: {
     allowNull: true,
     type: DataTypes.DECIMAL,
-  }, 
+  },
   CustomerRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   CustomerRefName: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   SyncToken: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   CurrencyRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   CurrencyRefName: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   PrivateNote: {
     allowNull: true,
     type: DataTypes.STRING,
@@ -1758,9 +2469,8 @@ const payment= sequelize.define("payment", {
     allowNull: true,
     type: DataTypes.STRING,
   },
-
 });
-const journalentry= sequelize.define("journalentry", {
+const journalentry = sequelize.define("journalentry", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1797,31 +2507,31 @@ const journalentry= sequelize.define("journalentry", {
   TaxRateRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   TaxRateRefName: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   TxnTaxDetailTxnTaxCodeRefvalue: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   TxnTaxDetailTxnTaxCodeRefName: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   TotalTax: {
     allowNull: true,
     type: DataTypes.DECIMAL,
-  }, 
+  },
   MetaDataCreateTimedateTime: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   LastUpdatedTimedateTime: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   RecurDataRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
@@ -1838,9 +2548,8 @@ const journalentry= sequelize.define("journalentry", {
     allowNull: true,
     type: DataTypes.DECIMAL,
   },
-  
 });
-const journalcode= sequelize.define("journalcode", {
+const journalcode = sequelize.define("journalcode", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1886,76 +2595,75 @@ const journalcode= sequelize.define("journalcode", {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  
 });
 
-const item= sequelize.define("item", {
+const item = sequelize.define("item", {
   Id: {
     primaryKey: true,
     allowNull: false,
     type: DataTypes.STRING,
   },
-  Name : {
+  Name: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  SyncToken : {
+  SyncToken: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  InvStartDateDate : {
+  InvStartDateDate: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  Type : {
+  Type: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  QtyOnHand : {
+  QtyOnHand: {
     allowNull: true,
     type: DataTypes.DECIMAL,
   },
-  AssetAccountRefValue : {
+  AssetAccountRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  AssetAccountRefName : {
+  AssetAccountRefName: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  Sku : {
+  Sku: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  SalesTaxIncluded : {
+  SalesTaxIncluded: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
   },
-  TrackQtyOnHand : {
+  TrackQtyOnHand: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
   },
-  SalesTaxCodeRefValue : {
+  SalesTaxCodeRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  SalesTaxCodeRefName  : {
+  SalesTaxCodeRefName: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  ClassRefValue  : {
+  ClassRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  ClassRefName  : {
+  ClassRefName: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  Source  : {
+  Source: {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  PurchaseTaxIncluded  : {
+  PurchaseTaxIncluded: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
   },
@@ -2052,7 +2760,7 @@ const item= sequelize.define("item", {
     type: DataTypes.STRING,
   },
 });
-const invoice= sequelize.define("invoice", {
+const invoice = sequelize.define("invoice", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2089,7 +2797,7 @@ const invoice= sequelize.define("invoice", {
   DocNumber: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   BillEmailAddress: {
     allowNull: true,
     type: DataTypes.STRING,
@@ -2097,23 +2805,23 @@ const invoice= sequelize.define("invoice", {
   TxnDate: {
     allowNull: true,
     type: DataTypes.DATE,
-  },  
+  },
   ShipDateDate: {
     allowNull: true,
     type: DataTypes.DATE,
-  }, 
+  },
   TrackingNum: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   ClassRefValue: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   ClassRefName: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   PrintStatus: {
     allowNull: true,
     type: DataTypes.STRING,
@@ -2273,13 +2981,13 @@ const invoice= sequelize.define("invoice", {
   Balance: {
     allowNull: true,
     type: DataTypes.DECIMAL,
-  },  
+  },
   FreeFormAddress: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
-  }, 
+  },
 });
-const exchangerate= sequelize.define("exchangerate", {
+const exchangerate = sequelize.define("exchangerate", {
   // Id: {
   //   primaryKey: true,
   //   allowNull: false,
@@ -2288,27 +2996,27 @@ const exchangerate= sequelize.define("exchangerate", {
   SyncToken: {
     allowNull: true,
     type: DataTypes.STRING,
-  },  
+  },
   AsOfDate: {
     allowNull: true,
     type: DataTypes.BOOLEAN,
-  }, 
+  },
   SourceCurrencyCode: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   Rate: {
     allowNull: true,
     type: DataTypes.DECIMAL,
-  }, 
+  },
   CustomFieldDefinitionId: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   CustomFieldStringValue: {
     allowNull: true,
     type: DataTypes.STRING,
-  }, 
+  },
   CustomFieldName: {
     allowNull: true,
     type: DataTypes.STRING,
@@ -2329,9 +3037,8 @@ const exchangerate= sequelize.define("exchangerate", {
     allowNull: true,
     type: DataTypes.STRING,
   },
-  
 });
-const estimate= sequelize.define("estimate", {
+const estimate = sequelize.define("estimate", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2413,125 +3120,125 @@ const estimate= sequelize.define("estimate", {
     allowNull: true,
     type: DataTypes.STRING,
   },
-//   LinkedTxn [0..n]
-// : {
-//     allowNull: true,
-//     type: DataTypes.STRING,
-//   },
-AcceptedDate: {
-  allowNull: true,
-  type: DataTypes.DATE,
-},
-ExpirationDateDate: {
-  allowNull: true,
-  type: DataTypes.DATE,
-},
-MetaDataCreateTimedateTime: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-LastUpdatedTimeDateTime: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-DocNumber: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-PrivateNote: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-PrivateNote: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-CustomerMemoValue: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-EmailStatus: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-ProjectRefValue: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-ProjectRefName: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-TxnTaxDetailTxnTaxCodeRefvalue: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-TxnTaxDetailTxnTaxCodeRefName: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-TxnTaxDetailTotalTax: {
-  allowNull: true,
-  type: DataTypes.DECIMAL,
-},
-AcceptedBy: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-ExchangeRate: {
-  allowNull: true,
-  type: DataTypes.DECIMAL,
-},
-// ShipAddr: {
-//   allowNull: true,
-//   type: DataTypes.DECIMAL,
-// },
-DepartmentRefValue: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-DepartmentRefName: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-// BillAddr: {
-//   allowNull: true,
-//   type: DataTypes.STRING,
-// },
-ApplyTaxAfterDiscount: {
-  allowNull: true,
-  type: DataTypes.BOOLEAN,
-},
-TotalAmt: {
-  allowNull: true,
-  type: DataTypes.BIGINT,
-},
-RecurDataRefValue: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-RecurDataRefName: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-TaxExemptionRefValue: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-TaxExemptionRefName: {
-  allowNull: true,
-  type: DataTypes.STRING,
-},
-HomeTotalAmt: {
-  allowNull: true,
-  type: DataTypes.DECIMAL,
-},
-FreeFormAddress: {
-  allowNull: true,
-  type: DataTypes.BOOLEAN,
-},
+  //   LinkedTxn [0..n]
+  // : {
+  //     allowNull: true,
+  //     type: DataTypes.STRING,
+  //   },
+  AcceptedDate: {
+    allowNull: true,
+    type: DataTypes.DATE,
+  },
+  ExpirationDateDate: {
+    allowNull: true,
+    type: DataTypes.DATE,
+  },
+  MetaDataCreateTimedateTime: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  LastUpdatedTimeDateTime: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  DocNumber: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PrivateNote: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  PrivateNote: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  CustomerMemoValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  EmailStatus: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ProjectRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ProjectRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TxnTaxDetailTxnTaxCodeRefvalue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TxnTaxDetailTxnTaxCodeRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TxnTaxDetailTotalTax: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  AcceptedBy: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  ExchangeRate: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  // ShipAddr: {
+  //   allowNull: true,
+  //   type: DataTypes.DECIMAL,
+  // },
+  DepartmentRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  DepartmentRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  // BillAddr: {
+  //   allowNull: true,
+  //   type: DataTypes.STRING,
+  // },
+  ApplyTaxAfterDiscount: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
+  TotalAmt: {
+    allowNull: true,
+    type: DataTypes.BIGINT,
+  },
+  RecurDataRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  RecurDataRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TaxExemptionRefValue: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  TaxExemptionRefName: {
+    allowNull: true,
+    type: DataTypes.STRING,
+  },
+  HomeTotalAmt: {
+    allowNull: true,
+    type: DataTypes.DECIMAL,
+  },
+  FreeFormAddress: {
+    allowNull: true,
+    type: DataTypes.BOOLEAN,
+  },
 });
-const employee= sequelize.define("employee", {
+const employee = sequelize.define("employee", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2638,7 +3345,7 @@ const employee= sequelize.define("employee", {
     type: DataTypes.STRING,
   },
 });
-const deposit= sequelize.define("deposit", {
+const deposit = sequelize.define("deposit", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2728,9 +3435,8 @@ const deposit= sequelize.define("deposit", {
     allowNull: true,
     type: DataTypes.Decimal,
   },
-
-  
 });
+
 // Synchronize all models with the database
 async function main() {
   try {
@@ -2747,4 +3453,4 @@ async function main() {
   }
 }
 
-main();
+// main();
