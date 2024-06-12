@@ -1,7 +1,8 @@
 import QuickBooks from "node-quickbooks";
 import fs from "fs";
-import { Account, Attachable } from "./db/db.js";
+import { Account, Attachable, BillPayment } from "./db/db.js";
 import { Sequelize } from "sequelize";
+import { flattenObject } from "./utils.js";
 
 const qbo = new QuickBooks(
   process.env.CLIENT_ID,
@@ -32,16 +33,6 @@ const insertOrUpdateObjects = async (Model, arrayOfObjects) => {
   try {
     await sequelize.transaction(async (t) => {
       for (const obj of arrayOfObjects) {
-        // // Check if the object exists in the database
-        // const existingObj = await Model.findOne({ where: { TnxId: obj.TnxId } });
-
-        // if (existingObj) {
-        //   // If the object exists, update its attributes
-        //   await existingObj.update(obj, { transaction: t });
-        // } else {
-        //   // If the object doesn't exist, create a new entry
-        //   await Model.create(obj, { transaction: t });
-        // }
         await Model.upsert(obj);
       }
     });
@@ -64,13 +55,12 @@ const main = async () => {
         {
           Query: "select * from Attachable",
         },
-        // // Check this when you download first PDF
         // {
         //   Query: "select * from Bill",
         // },
-        // {
-        //   Query: "select * from billpayment",
-        // },
+        {
+          Query: "select * from billpayment",
+        },
         // {
         //   Query: "Select * from Budget",
         // },
@@ -154,83 +144,28 @@ const main = async () => {
       async (err, response) => {
         console.log("err batch", err);
 
-        console.log("response", response);
+        console.log("response", response.BatchItemResponse);
 
         const accounts =
-          response?.BatchItemResponse?.[0].QueryResponse?.Account?.map(
-            (item) => ({
-              Id: item.Id,
-              Name: item.Name,
-              SubAccount: item.SubAccount,
-              FullyQualifiedName: item.FullyQualifiedName,
-              Active: item.Active,
-              Classification: item.Classification,
-              AccountType: item.AccountType,
-              AccountSubType: item.AccountSubType,
-              CurrentBalance: item.CurrentBalance,
-              CurrentBalanceWithSubAccounts: item.CurrentBalanceWithSubAccounts,
-              CurrencyRefValue: item.CurrencyRef?.value,
-              CurrencyRefName: item.CurrencyRef?.name,
-              ParentRefValue: item.ParentRef?.value,
-              ParentRefName: item.ParentRef?.name,
-              domain: item.domain,
-              sparse: item.sparse,
-              SyncToken: item.SyncToken,
-              MetaDataCreateTime: item.MetaData?.CreateTime,
-              MetaDataLastUpdatedTime: item.MetaData?.LastUpdatedTime,
-              AcctNum: item.AcctNum,
-              Description: item.Description,
-            })
+          response?.BatchItemResponse?.[0].QueryResponse?.Account?.map((item) =>
+            flattenObject(item)
           ) ?? [];
 
+        await insertOrUpdateObjects(Account, accounts);
+
         const attachables =
-          response?.BatchItemResponse?.[0].QueryResponse?.Attachable?.map(
-            (item) => ({
-              Id: item.Id,
-              SyncToken: item.SyncToken,
-              FileName: item.FileName,
-              Note: item.Note,
-              Category: item.Category,
-              ContentType: item.ContentType,
-              PlaceName: item.PlaceName,
-              AttachableRefIncludeOnSend: item.AttachableRefIncludeOnSend,
-              AttachableRefLineInfo: item.AttachableRefLineInfo,
-              AttachableRefNoRefOnly: item.AttachableRefNoRefOnly,
-              AttachableRefInactive: item.AttachableRefInactive,
-              AttachableRefEntityRefValue: item.AttachableRefEntityRef?.value,
-              AttachableRefEntityRefName: item.AttachableRefEntityRef?.name,
-              Long: item.Long,
-              Tag: item.Tag,
-              Lat: item.Lat,
-              MetaDataCreateTime: item.MetaData?.CreateTime,
-              MetaDataLastUpdatedTime: item.MetaData?.LastUpdatedTime,
-              FileAccessUri: item.FileAccessUri,
-              Size: item.Size,
-              ThumbnailFileAccessUri: item.ThumbnailFileAccessUri,
-              TempDownloadUri: item.TempDownloadUri,
-              ThumbnailTempDownloadUri: item.ThumbnailTempDownloadUri,
-            })
+          response?.BatchItemResponse?.[1].QueryResponse?.Attachable?.map(
+            (item) => flattenObject(item)
           ) ?? [];
 
         await insertOrUpdateObjects(Attachable, attachables);
 
-        // response.BatchItemResponse[0].QueryResponse.Invoice.map((invoice) => {
-        //   console.log("Invoice", invoice.Id);
-        //   qbo.getInvoicePdf(invoice.Id, (err, response) => {
-        //     console.log("err invoice pdf", err);
-        //     fs.writeFile(
-        //       `./invoices/Invoice-${invoice.Id}.pdf`,
-        //       response,
-        //       (err) => {
-        //         if (err) {
-        //           console.error("Error writing the file:", err);
-        //         } else {
-        //           console.log("File has been saved!");
-        //         }
-        //       }
-        //     );
-        //   });
-        // });
+        const billPayments =
+          response?.BatchItemResponse?.[2].QueryResponse?.BillPayment?.map(
+            (item) => flattenObject(item)
+          ) ?? [];
+
+        await insertOrUpdateObjects(BillPayment, billPayments);
       }
     );
 
