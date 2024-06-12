@@ -106,9 +106,9 @@ const main = async () => {
   //     // {
   //     //   Query: "Select * from ReimburseCharge",
   //     // },
-  //     // {
-  //     //   Query: "select * from SalesReceipt",
-  //     // },
+      {
+        Query: "select * from SalesReceipt", //proveri
+      },
   //   ],
   //   (err, response) => {
   //     console.log("err batch", err);
@@ -162,9 +162,9 @@ const main = async () => {
   //     {
   //       Query: "select * from CreditMemo TxnDate",
   //     },
-  //     {
-  //       Query: "select * from creditcardpayment",
-  //     },
+      {
+        Query: "select * from creditcardpayment",
+      },
   //     {
   //       Query: "Select * From TaxRate",
   //     },
