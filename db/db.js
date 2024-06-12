@@ -1635,7 +1635,7 @@ const RecurringTransaction = sequelize.define("RecurringTransaction", {
     type: DataTypes.STRING,
   },
 });
-const purchaseorder = sequelize.define("purchaseorder", {
+const Purchaseorder = sequelize.define("Purchaseorder", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -1782,7 +1782,7 @@ const purchaseorder = sequelize.define("purchaseorder", {
     type: DataTypes.BIGINT,
   },
 });
-const purchase = sequelize.define("purchase", {
+const Purchase = sequelize.define("Purchase", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2324,7 +2324,7 @@ const Preferences = sequelize.define("Preferences", {
     type: DataTypes.BOOLEAN,
   },
 });
-const paymentmethod = sequelize.define("paymentmethod", {
+const Paymentmethod = sequelize.define("Paymentmethod", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2355,7 +2355,7 @@ const paymentmethod = sequelize.define("paymentmethod", {
     type: DataTypes.STRING,
   },
 });
-const payment = sequelize.define("payment", {
+const Payment = sequelize.define("Payment", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2470,7 +2470,7 @@ const payment = sequelize.define("payment", {
     type: DataTypes.STRING,
   },
 });
-const journalentry = sequelize.define("journalentry", {
+const Journalentry = sequelize.define("Journalentry", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2549,7 +2549,7 @@ const journalentry = sequelize.define("journalentry", {
     type: DataTypes.DECIMAL,
   },
 });
-const journalcode = sequelize.define("journalcode", {
+const Journalcode = sequelize.define("Journalcode", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2597,7 +2597,7 @@ const journalcode = sequelize.define("journalcode", {
   },
 });
 
-const item = sequelize.define("item", {
+const Item = sequelize.define("Item", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2760,7 +2760,7 @@ const item = sequelize.define("item", {
     type: DataTypes.STRING,
   },
 });
-const invoice = sequelize.define("invoice", {
+const Invoice = sequelize.define("Invoice", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -2987,7 +2987,7 @@ const invoice = sequelize.define("invoice", {
     type: DataTypes.BOOLEAN,
   },
 });
-const exchangerate = sequelize.define("exchangerate", {
+const Exchangerate = sequelize.define("Exchangerate", {
   // Id: {
   //   primaryKey: true,
   //   allowNull: false,
@@ -3038,7 +3038,7 @@ const exchangerate = sequelize.define("exchangerate", {
     type: DataTypes.STRING,
   },
 });
-const estimate = sequelize.define("estimate", {
+const Estimate = sequelize.define("Estimate", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -3238,7 +3238,7 @@ const estimate = sequelize.define("estimate", {
     type: DataTypes.BOOLEAN,
   },
 });
-const employee = sequelize.define("employee", {
+const Employee = sequelize.define("Employee", {
   Id: {
     primaryKey: true,
     allowNull: false,
@@ -3345,7 +3345,7 @@ const employee = sequelize.define("employee", {
     type: DataTypes.STRING,
   },
 });
-const deposit = sequelize.define("deposit", {
+const Deposit = sequelize.define("Deposit", {
   Id: {
     primaryKey: true,
     allowNull: false,
